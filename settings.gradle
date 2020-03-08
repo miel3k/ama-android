@@ -1,2 +1,3 @@
 rootProject.name='ama-android'
 include ':app'
+include ':core'
