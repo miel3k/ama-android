@@ -14,6 +14,6 @@ class ConfigurationsRepository @Inject constructor(
 ) : ConfigurationsDataSource {
 
     override suspend fun getConfigurations(): RepositoryResult<List<Configuration>> {
-        TODO("Not yet implemented")
+        return configurationsRemote.getConfigurations()
     }
 }

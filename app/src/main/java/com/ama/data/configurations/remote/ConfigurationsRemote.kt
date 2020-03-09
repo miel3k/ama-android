@@ -3,10 +3,19 @@ package com.ama.data.configurations.remote
 import com.ama.data.RepositoryResult
 import com.ama.data.configurations.ConfigurationsDataSource
 import com.ama.data.configurations.model.Configuration
+import java.io.IOException
 
-object ConfigurationsRemote : ConfigurationsDataSource {
+class ConfigurationsRemote internal constructor(
+    private val configurationsApi: ConfigurationsApi
+) : ConfigurationsDataSource {
 
     override suspend fun getConfigurations(): RepositoryResult<List<Configuration>> {
-        TODO("Not yet implemented")
+        val response = configurationsApi.getConfigurationsAsync().await()
+        return if (response.isSuccessful) {
+            RepositoryResult.Success(response.body()!!)
+        } else {
+            val message = response.errorBody().toString()
+            RepositoryResult.Error(IOException(message))
+        }
     }
 }

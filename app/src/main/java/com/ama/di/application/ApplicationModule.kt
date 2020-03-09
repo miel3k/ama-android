@@ -6,7 +6,9 @@ import com.ama.data.AmaDatabase
 import com.ama.data.configurations.ConfigurationsDataSource
 import com.ama.data.configurations.ConfigurationsRepository
 import com.ama.data.configurations.local.ConfigurationsLocal
+import com.ama.data.configurations.remote.ConfigurationsApi
 import com.ama.data.configurations.remote.ConfigurationsRemote
+import com.ama.di.network.NetworkModule
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -15,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-@Module(includes = [ApplicationModuleBinds::class])
+@Module(includes = [ApplicationModuleBinds::class, NetworkModule::class])
 object ApplicationModule {
 
     @Qualifier
@@ -30,8 +32,8 @@ object ApplicationModule {
     @Singleton
     @ConfigurationsRemote
     @Provides
-    fun provideConfigurationsRemote(): ConfigurationsDataSource {
-        return ConfigurationsRemote
+    fun provideConfigurationsRemote(configurationsApi: ConfigurationsApi): ConfigurationsDataSource {
+        return ConfigurationsRemote(configurationsApi)
     }
 
     @JvmStatic
