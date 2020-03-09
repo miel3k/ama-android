@@ -1,4 +1,11 @@
 package com.ama.configuration
 
-class ConfigurationViewModel {
+import androidx.lifecycle.ViewModel
+import com.ama.data.configurations.ConfigurationsDataSource
+import javax.inject.Inject
+
+class ConfigurationViewModel @Inject constructor(
+    private val configurationsRepository: ConfigurationsDataSource
+) : ViewModel() {
+
 }

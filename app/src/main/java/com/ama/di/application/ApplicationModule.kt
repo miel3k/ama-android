@@ -1,4 +1,4 @@
-package com.ama.di
+package com.ama.di.application
 
 import android.content.Context
 import androidx.room.Room
@@ -11,6 +11,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -36,6 +37,7 @@ object ApplicationModule {
     @JvmStatic
     @Singleton
     @ConfigurationsLocal
+    @Provides
     fun provideConfigurationsLocal(
         database: AmaDatabase,
         dispatcher: CoroutineDispatcher
@@ -53,6 +55,11 @@ object ApplicationModule {
             "AMA.db"
         ).build()
     }
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideIoDispatcher() = Dispatchers.IO
 }
 
 @Module

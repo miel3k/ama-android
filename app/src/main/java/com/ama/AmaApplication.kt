@@ -1,9 +1,12 @@
 package com.ama
 
-import android.app.Application
-import com.ama.di.DaggerApplicationComponent
+import com.ama.di.application.DaggerApplicationComponent
+import dagger.android.AndroidInjector
+import dagger.android.support.DaggerApplication
 
-class AmaApplication : Application() {
+open class AmaApplication : DaggerApplication() {
 
-    val appComponent = DaggerApplicationComponent.create()
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
+        return DaggerApplicationComponent.factory().create(applicationContext)
+    }
 }

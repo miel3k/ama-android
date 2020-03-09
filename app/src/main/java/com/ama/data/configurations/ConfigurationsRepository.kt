@@ -2,7 +2,7 @@ package com.ama.data.configurations
 
 import com.ama.data.RepositoryResult
 import com.ama.data.configurations.model.Configuration
-import com.ama.di.ApplicationModule
+import com.ama.di.application.ApplicationModule
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
