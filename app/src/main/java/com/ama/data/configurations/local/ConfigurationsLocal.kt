@@ -21,4 +21,16 @@ class ConfigurationsLocal internal constructor(
                 RepositoryResult.Error(e)
             }
         }
+
+    override suspend fun getConfiguration(configurationId: String): RepositoryResult<Configuration> =
+        withContext(dispatcher)
+        {
+            return@withContext try {
+                val configuration =
+                    configurationsDao.getConfiguration(configurationId)
+                RepositoryResult.Success(configuration)
+            } catch (e: Exception) {
+                RepositoryResult.Error(e)
+            }
+        }
 }

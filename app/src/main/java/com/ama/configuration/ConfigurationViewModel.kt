@@ -13,7 +13,8 @@ class ConfigurationViewModel @Inject constructor(
 
     fun loadConfigurations() {
         viewModelScope.launch {
-            when (val result = configurationsRepository.getConfigurations()) {
+            when (val result =
+                configurationsRepository.getConfiguration("123456")) {
                 is RepositoryResult.Success -> {
                     val list = result.data
                     list

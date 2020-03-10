@@ -16,4 +16,8 @@ class ConfigurationsRepository @Inject constructor(
     override suspend fun getConfigurations(): RepositoryResult<List<Configuration>> {
         return configurationsRemote.getConfigurations()
     }
+
+    override suspend fun getConfiguration(configurationId: String): RepositoryResult<Configuration> {
+        return configurationsRemote.getConfiguration(configurationId)
+    }
 }

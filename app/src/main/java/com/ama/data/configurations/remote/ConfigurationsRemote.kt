@@ -18,4 +18,15 @@ class ConfigurationsRemote internal constructor(
             RepositoryResult.Error(IOException(message))
         }
     }
+
+    override suspend fun getConfiguration(configurationId: String): RepositoryResult<Configuration> {
+        val response =
+            configurationsApi.getConfigurationAsync(configurationId).await()
+        return if (response.isSuccessful) {
+            RepositoryResult.Success(response.body()!!)
+        } else {
+            val message = response.errorBody().toString()
+            RepositoryResult.Error(IOException(message))
+        }
+    }
 }
