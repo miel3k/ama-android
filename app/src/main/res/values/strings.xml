@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ama-android</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="configuration_id_empty_error">Configuration Id is empty</string>
 </resources>

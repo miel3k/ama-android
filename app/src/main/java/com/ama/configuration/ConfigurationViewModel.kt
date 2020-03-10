@@ -2,6 +2,7 @@ package com.ama.configuration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ama.core.SingleLiveEvent
 import com.ama.data.RepositoryResult
 import com.ama.data.configurations.ConfigurationsDataSource
 import kotlinx.coroutines.launch
@@ -11,18 +12,29 @@ class ConfigurationViewModel @Inject constructor(
     private val configurationsRepository: ConfigurationsDataSource
 ) : ViewModel() {
 
-    fun loadConfigurations() {
+    val error = SingleLiveEvent<Error>()
+    val success = SingleLiveEvent<Void>()
+
+    fun loadConfiguration(configurationId: String) {
+        if (configurationId.isEmpty()) {
+            error.postValue(Error.ConfigurationIdEmpty)
+            return
+        }
         viewModelScope.launch {
             when (val result =
-                configurationsRepository.getConfiguration("123456")) {
+                configurationsRepository.getConfiguration(configurationId)) {
                 is RepositoryResult.Success -> {
-                    val list = result.data
-                    list
+                    success.call()
                 }
                 is RepositoryResult.Error -> {
-
+                    error.postValue(Error.Remote(result.exception.message.orEmpty()))
                 }
             }
         }
+    }
+
+    sealed class Error {
+        object ConfigurationIdEmpty : Error()
+        class Remote(val message: String) : Error()
     }
 }
