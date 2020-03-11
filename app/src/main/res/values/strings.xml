@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">ama-android</string>
+    <!-- Errors -->
     <string name="unknown_error">Unknown error</string>
     <string name="configuration_id_empty_error">Configuration Id is empty</string>
+    <!-- Labels -->
+    <string name="configuration_fragment_label">Configuration</string>
+    <string name="location_fragment_label">Location</string>
 </resources>

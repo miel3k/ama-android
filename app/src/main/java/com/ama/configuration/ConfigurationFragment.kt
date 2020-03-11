@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.ama.R
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_configuration.*
@@ -48,7 +49,7 @@ class ConfigurationFragment : DaggerFragment() {
 
     private fun setupSuccess() {
         viewModel.success.observe(viewLifecycleOwner, Observer {
-            //findNavController().navigate()
+            findNavController().navigate(R.id.action_configuration_fragment)
         })
     }
 

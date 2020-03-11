@@ -9,5 +9,15 @@
         android:id="@+id/fr_configuration"
         android:name="com.ama.configuration.ConfigurationFragment"
         android:label="Blank"
-        tools:layout="@layout/fragment_configuration" />
+        tools:layout="@layout/fragment_configuration">
+        <action
+            android:id="@+id/action_configuration_fragment"
+            app:destination="@id/fr_location" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fr_location"
+        android:name="com.ama.location.LocationFragment"
+        android:label="Blank"
+        tools:layout="@layout/fragment_location" />
 </navigation>

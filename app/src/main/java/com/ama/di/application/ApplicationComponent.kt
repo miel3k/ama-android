@@ -3,6 +3,7 @@ package com.ama.di.application
 import android.content.Context
 import com.ama.AmaApplication
 import com.ama.di.configuration.ConfigurationModule
+import com.ama.di.location.LocationModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjector
@@ -14,7 +15,8 @@ import javax.inject.Singleton
     modules = [
         ApplicationModule::class,
         AndroidSupportInjectionModule::class,
-        ConfigurationModule::class
+        ConfigurationModule::class,
+        LocationModule::class
     ]
 )
 interface ApplicationComponent : AndroidInjector<AmaApplication> {
