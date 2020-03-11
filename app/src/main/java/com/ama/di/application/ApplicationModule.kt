@@ -8,6 +8,11 @@ import com.ama.data.configurations.ConfigurationsRepository
 import com.ama.data.configurations.local.ConfigurationsLocal
 import com.ama.data.configurations.remote.ConfigurationsApi
 import com.ama.data.configurations.remote.ConfigurationsRemote
+import com.ama.data.locations.LocationsDataSource
+import com.ama.data.locations.LocationsRepository
+import com.ama.data.locations.local.LocationsLocal
+import com.ama.data.locations.remote.LocationsApi
+import com.ama.data.locations.remote.LocationsRemote
 import com.ama.di.network.NetworkModule
 import dagger.Binds
 import dagger.Module
@@ -28,6 +33,14 @@ object ApplicationModule {
     @Retention(AnnotationRetention.RUNTIME)
     annotation class ConfigurationsLocal
 
+    @Qualifier
+    @Retention(AnnotationRetention.RUNTIME)
+    annotation class LocationsRemote
+
+    @Qualifier
+    @Retention(AnnotationRetention.RUNTIME)
+    annotation class LocationsLocal
+
     @JvmStatic
     @Singleton
     @ConfigurationsRemote
@@ -45,6 +58,25 @@ object ApplicationModule {
         dispatcher: CoroutineDispatcher
     ): ConfigurationsDataSource {
         return ConfigurationsLocal(database.configurationsDao(), dispatcher)
+    }
+
+    @JvmStatic
+    @Singleton
+    @LocationsRemote
+    @Provides
+    fun provideLocationsRemote(locationsApi: LocationsApi): LocationsDataSource {
+        return LocationsRemote(locationsApi)
+    }
+
+    @JvmStatic
+    @Singleton
+    @LocationsLocal
+    @Provides
+    fun provideLocationsLocal(
+        database: AmaDatabase,
+        dispatcher: CoroutineDispatcher
+    ): LocationsDataSource {
+        return LocationsLocal(database.locationsDao(), dispatcher)
     }
 
     @JvmStatic
@@ -69,7 +101,13 @@ abstract class ApplicationModuleBinds {
 
     @Singleton
     @Binds
-    abstract fun bindConfigurationRepository(
+    abstract fun bindConfigurationsRepository(
         repository: ConfigurationsRepository
     ): ConfigurationsDataSource
+
+    @Singleton
+    @Binds
+    abstract fun bindLocationsRepository(
+        repository: LocationsRepository
+    ): LocationsDataSource
 }

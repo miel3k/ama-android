@@ -9,16 +9,6 @@ class ConfigurationsRemote internal constructor(
     private val configurationsApi: ConfigurationsApi
 ) : ConfigurationsDataSource {
 
-    override suspend fun getConfigurations(): RepositoryResult<List<Configuration>> {
-        val response = configurationsApi.getConfigurationsAsync().await()
-        return if (response.isSuccessful) {
-            RepositoryResult.Success(response.body()!!)
-        } else {
-            val message = response.errorBody().toString()
-            RepositoryResult.Error(IOException(message))
-        }
-    }
-
     override suspend fun loadConfiguration(configurationId: String): RepositoryResult<Configuration> {
         val response =
             configurationsApi.getConfigurationAsync(configurationId).await()

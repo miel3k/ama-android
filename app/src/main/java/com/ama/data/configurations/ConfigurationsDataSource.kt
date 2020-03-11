@@ -6,8 +6,6 @@ import com.ama.data.configurations.model.Configuration
 
 interface ConfigurationsDataSource {
 
-    suspend fun getConfigurations(): RepositoryResult<List<Configuration>>
-
     suspend fun getConfiguration(configurationId: String): LiveData<Configuration> {
         throw NotImplementedError(this::class.java.name)
     }

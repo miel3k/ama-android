@@ -14,10 +14,6 @@ class ConfigurationsRepository @Inject constructor(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ConfigurationsDataSource {
 
-    override suspend fun getConfigurations(): RepositoryResult<List<Configuration>> {
-        return configurationsRemote.getConfigurations()
-    }
-
     override suspend fun getConfiguration(configurationId: String): LiveData<Configuration> {
         return configurationsLocal.getConfiguration(configurationId)
     }

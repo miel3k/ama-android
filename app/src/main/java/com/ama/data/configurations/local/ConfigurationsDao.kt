@@ -10,9 +10,6 @@ import com.ama.data.configurations.model.Configuration
 @Dao
 interface ConfigurationsDao {
 
-    @Query("SELECT * FROM Configurations")
-    suspend fun getConfigurations(): List<Configuration>
-
     @Query("SELECT * FROM Configurations WHERE configurationId=:id")
     fun getConfiguration(id: String): LiveData<Configuration>
 

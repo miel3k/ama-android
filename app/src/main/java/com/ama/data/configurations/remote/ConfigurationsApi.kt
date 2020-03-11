@@ -7,8 +7,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ConfigurationsApi {
-    @GET("/configurations.json")
-    fun getConfigurationsAsync(): Deferred<Response<List<Configuration>>>
 
     @GET("/configurations/{id}.json")
     fun getConfigurationAsync(@Path(value = "id") configurationId: String): Deferred<Response<Configuration>>

@@ -1,6 +1,7 @@
 package com.ama.di.network
 
 import com.ama.data.configurations.remote.ConfigurationsApi
+import com.ama.data.locations.remote.LocationsApi
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -16,6 +17,13 @@ object NetworkModule {
     @Provides
     fun provideConfigurationsApi(retrofit: Retrofit): ConfigurationsApi {
         return retrofit.create(ConfigurationsApi::class.java)
+    }
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideLocationsApi(retrofit: Retrofit): LocationsApi {
+        return retrofit.create(LocationsApi::class.java)
     }
 
     @JvmStatic
