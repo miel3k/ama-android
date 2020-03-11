@@ -1,5 +1,6 @@
 package com.ama.data.configurations
 
+import androidx.lifecycle.LiveData
 import com.ama.data.RepositoryResult
 import com.ama.data.configurations.model.Configuration
 import com.ama.di.application.ApplicationModule
@@ -17,7 +18,16 @@ class ConfigurationsRepository @Inject constructor(
         return configurationsRemote.getConfigurations()
     }
 
-    override suspend fun getConfiguration(configurationId: String): RepositoryResult<Configuration> {
-        return configurationsRemote.getConfiguration(configurationId)
+    override suspend fun getConfiguration(configurationId: String): LiveData<Configuration> {
+        return configurationsLocal.getConfiguration(configurationId)
+    }
+
+    override suspend fun loadConfiguration(configurationId: String): RepositoryResult<Configuration> {
+        val configurationResult =
+            configurationsRemote.loadConfiguration(configurationId)
+        if (configurationResult is RepositoryResult.Success) {
+            configurationsLocal.saveConfiguration(configurationResult.data)
+        }
+        return configurationResult
     }
 }

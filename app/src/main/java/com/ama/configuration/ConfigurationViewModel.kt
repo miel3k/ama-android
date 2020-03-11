@@ -22,7 +22,7 @@ class ConfigurationViewModel @Inject constructor(
         }
         viewModelScope.launch {
             when (val result =
-                configurationsRepository.getConfiguration(configurationId)) {
+                configurationsRepository.loadConfiguration(configurationId)) {
                 is RepositoryResult.Success -> {
                     success.call()
                 }

@@ -38,6 +38,7 @@ class LocationFragment : DaggerFragment() {
         setupChangeConfigurationButton()
         setupEventsRecyclerView()
         setupEventsObserver()
+        setupConfigurationObserver()
     }
 
     private fun setupEventsRecyclerView() {
@@ -57,6 +58,13 @@ class LocationFragment : DaggerFragment() {
         viewModel.events.observe(viewLifecycleOwner, Observer {
             vs_events.switchView(it.isEmpty(), rv_events, v_empty_state)
             eventsAdapter.updateEvents(it)
+        })
+    }
+
+    private fun setupConfigurationObserver() {
+        viewModel.configuration.observe(viewLifecycleOwner, Observer {
+            tv_title.text = it.id
+            tv_name.text = it.name
         })
     }
 }

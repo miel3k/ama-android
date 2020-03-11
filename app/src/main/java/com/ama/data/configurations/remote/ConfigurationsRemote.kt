@@ -19,7 +19,7 @@ class ConfigurationsRemote internal constructor(
         }
     }
 
-    override suspend fun getConfiguration(configurationId: String): RepositoryResult<Configuration> {
+    override suspend fun loadConfiguration(configurationId: String): RepositoryResult<Configuration> {
         val response =
             configurationsApi.getConfigurationAsync(configurationId).await()
         return if (response.isSuccessful) {

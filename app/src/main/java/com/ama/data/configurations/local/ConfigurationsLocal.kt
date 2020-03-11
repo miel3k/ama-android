@@ -1,5 +1,6 @@
 package com.ama.data.configurations.local
 
+import androidx.lifecycle.LiveData
 import com.ama.data.RepositoryResult
 import com.ama.data.configurations.ConfigurationsDataSource
 import com.ama.data.configurations.model.Configuration
@@ -22,15 +23,17 @@ class ConfigurationsLocal internal constructor(
             }
         }
 
-    override suspend fun getConfiguration(configurationId: String): RepositoryResult<Configuration> =
+    override suspend fun getConfiguration(configurationId: String): LiveData<Configuration> =
         withContext(dispatcher)
         {
-            return@withContext try {
-                val configuration =
-                    configurationsDao.getConfiguration(configurationId)
-                RepositoryResult.Success(configuration)
-            } catch (e: Exception) {
-                RepositoryResult.Error(e)
-            }
+            return@withContext configurationsDao.getConfiguration(
+                configurationId
+            )
+        }
+
+    override suspend fun saveConfiguration(configuration: Configuration) =
+        withContext(dispatcher)
+        {
+            configurationsDao.insertConfiguration(configuration)
         }
 }
