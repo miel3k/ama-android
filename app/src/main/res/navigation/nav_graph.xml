@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/fr_location"
-        android:name="com.ama.location.LocationFragment"
+        android:name="com.ama.location.view.LocationFragment"
         android:label="Blank"
         tools:layout="@layout/fragment_location" />
 </navigation>

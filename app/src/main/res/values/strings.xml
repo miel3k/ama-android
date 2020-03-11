@@ -6,4 +6,9 @@
     <!-- Labels -->
     <string name="configuration_fragment_label">Configuration</string>
     <string name="location_fragment_label">Location</string>
+    <string name="no_events_found">Oops. No events found</string>
+    <string name="change_configuration">Change configuration</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="clear">Clear</string>
 </resources>
