@@ -7,5 +7,5 @@ interface LocationsDataSource {
 
     suspend fun loadLocations(): RepositoryResult<List<Location>>
 
-    suspend fun saveLocation(location: Location)
+    suspend fun saveLocation(location: Location): RepositoryResult<Location>
 }

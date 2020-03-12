@@ -35,8 +35,9 @@ class LocationFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupChangeConfigurationButton()
         setupEventsRecyclerView()
+        setupChangeConfigurationButton()
+        setupClearButton()
         setupEventsObserver()
         setupConfigurationObserver()
     }
@@ -51,6 +52,12 @@ class LocationFragment : DaggerFragment() {
     private fun setupChangeConfigurationButton() {
         btn_change_configuration.setOnClickListener {
             findNavController().popBackStack()
+        }
+    }
+
+    private fun setupClearButton() {
+        btn_clear_logs.setOnClickListener {
+            viewModel.saveLocation()
         }
     }
 

@@ -8,8 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 class LocationsRepository @Inject constructor(
-    @ApplicationModule.ConfigurationsRemote private val locationsRemote: LocationsDataSource,
-    @ApplicationModule.ConfigurationsLocal private val locationsLocal: LocationsDataSource,
+    @ApplicationModule.LocationsRemote private val locationsRemote: LocationsDataSource,
+    @ApplicationModule.LocationsLocal private val locationsLocal: LocationsDataSource,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : LocationsDataSource {
 
@@ -17,7 +17,7 @@ class LocationsRepository @Inject constructor(
         return locationsRemote.loadLocations()
     }
 
-    override suspend fun saveLocation(location: Location) {
-        TODO("Not yet implemented")
+    override suspend fun saveLocation(location: Location): RepositoryResult<Location> {
+        return locationsRemote.saveLocation(location)
     }
 }

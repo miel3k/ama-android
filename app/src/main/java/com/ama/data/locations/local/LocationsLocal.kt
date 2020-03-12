@@ -22,9 +22,14 @@ class LocationsLocal internal constructor(
             }
         }
 
-    override suspend fun saveLocation(location: Location) =
+    override suspend fun saveLocation(location: Location): RepositoryResult<Location> =
         withContext(dispatcher)
         {
-            locationsDao.insertLocation(location)
+            return@withContext try {
+                locationsDao.insertLocation(location)
+                RepositoryResult.Success(location)
+            } catch (e: Exception) {
+                RepositoryResult.Error(e)
+            }
         }
 }
