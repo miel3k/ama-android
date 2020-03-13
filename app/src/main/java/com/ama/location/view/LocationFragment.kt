@@ -40,6 +40,7 @@ class LocationFragment : DaggerFragment() {
         setupClearButton()
         setupEventsObserver()
         setupConfigurationObserver()
+        setupStartStopButton()
     }
 
     private fun setupEventsRecyclerView() {
@@ -58,6 +59,12 @@ class LocationFragment : DaggerFragment() {
     private fun setupClearButton() {
         btn_clear_logs.setOnClickListener {
             viewModel.saveLocation()
+        }
+    }
+
+    private fun setupStartStopButton() {
+        btn_start_stop.setOnClickListener {
+            //TODO Run location service
         }
     }
 
