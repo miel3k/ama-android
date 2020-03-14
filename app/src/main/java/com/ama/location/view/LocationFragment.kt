@@ -100,18 +100,22 @@ class LocationFragment : DaggerFragment() {
     private fun setupStartStopButton(
         serviceBinder: LocationForegroundService.LocationForegroundServiceBinder
     ) {
-        val labelId = if (serviceBinder.isServiceStarted()) {
-            R.string.stop
-        } else {
-            R.string.start
-        }
         btn_start_stop.run {
-            text = getString(labelId)
+            text = getString(getStartStopButtonLabel(serviceBinder))
             setOnClickListener {
                 val serviceAction =
                     getLocationForegroundServiceAction(isEnabled)
                 startLocationForegroundServiceIntent(serviceAction)
+                text = getString(getStartStopButtonLabel(serviceBinder))
             }
+        }
+    }
+
+    private fun getStartStopButtonLabel(serviceBinder: LocationForegroundService.LocationForegroundServiceBinder): Int {
+        return if (serviceBinder.isServiceStarted()) {
+            R.string.stop
+        } else {
+            R.string.start
         }
     }
 
