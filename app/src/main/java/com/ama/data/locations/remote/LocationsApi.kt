@@ -15,7 +15,7 @@ interface LocationsApi {
     fun getLocationsAsync(): Deferred<Response<List<Location>>>
 
     @POST("/locations.json")
-    fun saveLocation(
+    fun saveLocationAsync(
         @Body body: RequestBody,
         @HeaderMap headers: Map<String, String>
     ): Deferred<Response<Location>>

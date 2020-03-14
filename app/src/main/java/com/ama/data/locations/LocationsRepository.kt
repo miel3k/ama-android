@@ -14,10 +14,22 @@ class LocationsRepository @Inject constructor(
 ) : LocationsDataSource {
 
     override suspend fun loadLocations(): RepositoryResult<List<Location>> {
-        return locationsRemote.loadLocations()
+        val result = locationsRemote.loadLocations()
+        if (result is RepositoryResult.Success) {
+            locationsLocal.saveLocations(result.data)
+        }
+        return result
+    }
+
+    override suspend fun saveLocations(locations: List<Location>): RepositoryResult<List<Location>> {
+        return locationsLocal.saveLocations(locations)
     }
 
     override suspend fun saveLocation(location: Location): RepositoryResult<Location> {
-        return locationsRemote.saveLocation(location)
+        val result = locationsRemote.saveLocation(location)
+        if (result is RepositoryResult.Success) {
+            locationsLocal.saveLocation(result.data)
+        }
+        return result
     }
 }

@@ -1,22 +1,15 @@
 package com.ama.data.configurations.remote
 
 import com.ama.data.RepositoryResult
+import com.ama.data.call
 import com.ama.data.configurations.ConfigurationsDataSource
 import com.ama.data.configurations.model.Configuration
-import java.io.IOException
 
 class ConfigurationsRemote internal constructor(
     private val configurationsApi: ConfigurationsApi
 ) : ConfigurationsDataSource {
 
     override suspend fun loadConfiguration(configurationId: String): RepositoryResult<Configuration> {
-        val response =
-            configurationsApi.getConfigurationAsync(configurationId).await()
-        return if (response.isSuccessful) {
-            RepositoryResult.Success(response.body()!!)
-        } else {
-            val message = response.errorBody().toString()
-            RepositoryResult.Error(IOException(message))
-        }
+        return configurationsApi.getConfigurationAsync(configurationId).call()
     }
 }

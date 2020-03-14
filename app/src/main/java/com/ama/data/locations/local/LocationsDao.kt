@@ -10,8 +10,11 @@ import com.ama.data.locations.model.Location
 interface LocationsDao {
 
     @Query("SELECT * FROM Locations")
-    suspend fun getLocations(): List<Location>
+    suspend fun getAll(): List<Location>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertLocation(location: Location)
+    fun insert(location: Location)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(locations: List<Location>)
 }

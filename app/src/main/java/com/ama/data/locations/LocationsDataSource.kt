@@ -7,5 +7,9 @@ interface LocationsDataSource {
 
     suspend fun loadLocations(): RepositoryResult<List<Location>>
 
+    suspend fun saveLocations(locations: List<Location>): RepositoryResult<List<Location>> {
+        throw NotImplementedError(this::class.java.name)
+    }
+
     suspend fun saveLocation(location: Location): RepositoryResult<Location>
 }

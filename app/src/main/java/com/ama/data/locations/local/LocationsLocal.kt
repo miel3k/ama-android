@@ -16,7 +16,18 @@ class LocationsLocal internal constructor(
         withContext(dispatcher)
         {
             return@withContext try {
-                RepositoryResult.Success(locationsDao.getLocations())
+                RepositoryResult.Success(locationsDao.getAll())
+            } catch (e: Exception) {
+                RepositoryResult.Error(e)
+            }
+        }
+
+    override suspend fun saveLocations(locations: List<Location>) =
+        withContext(dispatcher)
+        {
+            return@withContext try {
+                locationsDao.insertAll(locations)
+                RepositoryResult.Success(locations)
             } catch (e: Exception) {
                 RepositoryResult.Error(e)
             }
@@ -26,7 +37,7 @@ class LocationsLocal internal constructor(
         withContext(dispatcher)
         {
             return@withContext try {
-                locationsDao.insertLocation(location)
+                locationsDao.insert(location)
                 RepositoryResult.Success(location)
             } catch (e: Exception) {
                 RepositoryResult.Error(e)
