@@ -11,7 +11,7 @@
         android:label="Blank"
         tools:layout="@layout/fragment_configuration">
         <action
-            android:id="@+id/action_configuration_fragment"
+            android:id="@+id/action_location_fragment"
             app:destination="@id/fr_location" />
     </fragment>
 
