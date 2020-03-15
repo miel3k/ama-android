@@ -40,7 +40,8 @@ class LocationFragment : DaggerFragment() {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             val binder =
                 service as LocationForegroundService.LocationForegroundServiceBinder
-            setupStartStopButton(binder)
+            val isServiceStarted = binder.isServiceStarted()
+            viewModel.changeLocationServiceStatus(isServiceStarted)
         }
     }
 
@@ -57,8 +58,10 @@ class LocationFragment : DaggerFragment() {
         setupEventsRecyclerView()
         setupChangeConfigurationButton()
         setupClearButton()
+        setupStartStopButton()
         setupEventsObserver()
         setupConfigurationObserver()
+        setupIsServiceStartedObserver()
     }
 
     override fun onStart() {
@@ -97,22 +100,18 @@ class LocationFragment : DaggerFragment() {
         }
     }
 
-    private fun setupStartStopButton(
-        serviceBinder: LocationForegroundService.LocationForegroundServiceBinder
-    ) {
-        btn_start_stop.run {
-            text = getString(getStartStopButtonLabel(serviceBinder))
-            setOnClickListener {
-                val serviceAction =
-                    getLocationForegroundServiceAction(isEnabled)
+    private fun setupStartStopButton() {
+        btn_start_stop.setOnClickListener {
+            viewModel.isServiceStarted.value?.let {
+                val serviceAction = getLocationForegroundServiceAction(it)
                 startLocationForegroundServiceIntent(serviceAction)
-                text = getString(getStartStopButtonLabel(serviceBinder))
+                viewModel.inverseLocationServiceStatus()
             }
         }
     }
 
-    private fun getStartStopButtonLabel(serviceBinder: LocationForegroundService.LocationForegroundServiceBinder): Int {
-        return if (serviceBinder.isServiceStarted()) {
+    private fun getStartStopButtonLabelId(isStarted: Boolean): Int {
+        return if (isStarted) {
             R.string.stop
         } else {
             R.string.start
@@ -133,8 +132,14 @@ class LocationFragment : DaggerFragment() {
         })
     }
 
+    private fun setupIsServiceStartedObserver() {
+        viewModel.isServiceStarted.observe(viewLifecycleOwner, Observer {
+            btn_start_stop.text = getString(getStartStopButtonLabelId(it))
+        })
+    }
+
     private fun getLocationForegroundServiceAction(isEnabled: Boolean) =
-        if (isEnabled) ServiceAction.START else ServiceAction.STOP
+        if (isEnabled) ServiceAction.STOP else ServiceAction.START
 
     private fun startLocationForegroundServiceIntent(serviceAction: String) {
         context?.let {
