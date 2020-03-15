@@ -8,6 +8,9 @@ import com.ama.data.configurations.ConfigurationsRepository
 import com.ama.data.configurations.local.ConfigurationsLocal
 import com.ama.data.configurations.remote.ConfigurationsApi
 import com.ama.data.configurations.remote.ConfigurationsRemote
+import com.ama.data.events.EventsDataSource
+import com.ama.data.events.EventsRepository
+import com.ama.data.events.local.EventsLocal
 import com.ama.data.locations.LocationsDataSource
 import com.ama.data.locations.LocationsRepository
 import com.ama.data.locations.local.LocationsLocal
@@ -40,6 +43,10 @@ object ApplicationModule {
     @Qualifier
     @Retention(AnnotationRetention.RUNTIME)
     annotation class LocationsLocal
+
+    @Qualifier
+    @Retention(AnnotationRetention.RUNTIME)
+    annotation class EventsLocal
 
     @JvmStatic
     @Singleton
@@ -81,6 +88,17 @@ object ApplicationModule {
 
     @JvmStatic
     @Singleton
+    @EventsLocal
+    @Provides
+    fun provideEventsLocal(
+        database: AmaDatabase,
+        dispatcher: CoroutineDispatcher
+    ): EventsDataSource {
+        return EventsLocal(database.eventsDao(), dispatcher)
+    }
+
+    @JvmStatic
+    @Singleton
     @Provides
     fun provideDatabase(context: Context): AmaDatabase {
         return Room.databaseBuilder(
@@ -110,4 +128,10 @@ abstract class ApplicationModuleBinds {
     abstract fun bindLocationsRepository(
         repository: LocationsRepository
     ): LocationsDataSource
+
+    @Singleton
+    @Binds
+    abstract fun bindEventsRepository(
+        repository: EventsRepository
+    ): EventsDataSource
 }

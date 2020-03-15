@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ama.R
-import com.ama.location.model.Event
+import com.ama.data.events.model.Event
 
 class EventsAdapter : RecyclerView.Adapter<EventViewHolder>() {
 

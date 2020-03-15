@@ -5,7 +5,7 @@ import com.ama.data.configurations.ConfigurationsDataSource
 import com.ama.data.configurations.model.Configuration
 import com.ama.data.locations.LocationsDataSource
 import com.ama.data.locations.model.Location
-import com.ama.location.model.Event
+import com.ama.data.events.model.Event
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
