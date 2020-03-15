@@ -13,11 +13,15 @@ class EventsRepository @Inject constructor(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : EventsDataSource {
 
-    override suspend fun getEvents(eventId: String): LiveData<List<Event>> {
-        return eventsLocal.getEvents(eventId)
+    override suspend fun getEvents(): LiveData<List<Event>> {
+        return eventsLocal.getEvents()
     }
 
     override suspend fun saveEvent(event: Event): RepositoryResult<Event> {
         return eventsLocal.saveEvent(event)
+    }
+
+    override suspend fun deleteEvents() {
+        eventsLocal.deleteEvents()
     }
 }

@@ -10,13 +10,26 @@ import android.location.LocationManager
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.ama.NotificationId
 import com.ama.core.getLocationPermissions
+import com.ama.data.events.EventsDataSource
+import com.ama.data.events.model.Event
+import com.ama.data.locations.LocationsDataSource
 import com.ama.location.LocationNotification
+import dagger.android.AndroidInjection
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.joda.time.DateTime
+import javax.inject.Inject
 
 class LocationForegroundService : Service() {
+
+    @Inject
+    lateinit var eventsRepository: EventsDataSource
+
+    @Inject
+    lateinit var locationsRepository: LocationsDataSource
 
     private val locationNotification by lazy {
         LocationNotification(applicationContext).create()
@@ -28,8 +41,15 @@ class LocationForegroundService : Service() {
     }
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
-            Log.e("LOCATION_SERVICE", location.latitude.toString())
-            //TODO save location update
+            GlobalScope.launch {
+                val testEvent = Event(
+                    date = DateTime.now().toString(),
+                    message = location.latitude.toString()
+                )
+                eventsRepository.saveEvent(testEvent)
+                val testLocation = com.ama.data.locations.model.Location()
+                locationsRepository.saveLocation(testLocation)
+            }
         }
 
         override fun onStatusChanged(
@@ -41,6 +61,11 @@ class LocationForegroundService : Service() {
 
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
+    }
+
+    override fun onCreate() {
+        AndroidInjection.inject(this)
+        super.onCreate()
     }
 
     override fun onBind(intent: Intent?): IBinder? {

@@ -96,7 +96,7 @@ class LocationFragment : DaggerFragment() {
 
     private fun setupClearButton() {
         btn_clear_logs.setOnClickListener {
-            viewModel.saveLocation()
+            viewModel.clearEvents()
         }
     }
 

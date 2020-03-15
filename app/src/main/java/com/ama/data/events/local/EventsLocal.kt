@@ -13,7 +13,7 @@ class EventsLocal internal constructor(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : EventsDataSource {
 
-    override suspend fun getEvents(eventId: String): LiveData<List<Event>> =
+    override suspend fun getEvents(): LiveData<List<Event>> =
         withContext(dispatcher) {
             return@withContext eventsDao.getAll()
         }
@@ -27,5 +27,11 @@ class EventsLocal internal constructor(
             } catch (e: Exception) {
                 RepositoryResult.Error(e)
             }
+        }
+
+    override suspend fun deleteEvents() =
+        withContext(dispatcher)
+        {
+            return@withContext eventsDao.deleteAll()
         }
 }

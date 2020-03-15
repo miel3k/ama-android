@@ -6,7 +6,9 @@ import com.ama.data.events.model.Event
 
 interface EventsDataSource {
 
-    suspend fun getEvents(eventId: String): LiveData<List<Event>>
+    suspend fun getEvents(): LiveData<List<Event>>
 
     suspend fun saveEvent(event: Event): RepositoryResult<Event>
+
+    suspend fun deleteEvents()
 }
