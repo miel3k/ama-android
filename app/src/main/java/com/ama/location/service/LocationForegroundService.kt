@@ -130,7 +130,7 @@ class LocationForegroundService : Service() {
 
     private suspend fun sendLocation(location: Location) {
         val isPermissionGranted = ActivityCompat.checkSelfPermission(
-            this,
+            applicationContext,
             Manifest.permission.READ_PHONE_STATE
         ) == PackageManager.PERMISSION_GRANTED
         if (isPermissionGranted) {
