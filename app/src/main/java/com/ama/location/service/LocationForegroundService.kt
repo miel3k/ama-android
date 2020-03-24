@@ -94,10 +94,10 @@ class LocationForegroundService : Service() {
     }
 
     private fun stop() {
+        locationManager.removeUpdates(locationListener)
         stopForeground(true)
         stopSelf()
         isStarted = false
-        //locationManager.removeUpdates(locationListener)
     }
 
     private fun startLocationTracking(interval: Int) {
