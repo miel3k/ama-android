@@ -1,5 +1,6 @@
 package com.ama.configuration
 
+import android.Manifest
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -54,10 +55,9 @@ class ConfigurationFragment : DaggerFragment() {
     private fun setupSuccessObserver() {
         viewModel.success.observe(viewLifecycleOwner, Observer {
             activity?.let {
-                it.requestPermission(
-                    getLocationPermissions(),
-                    ::openLocationFragment
-                ) {
+                val permissions =
+                    getLocationPermissions() + Manifest.permission.READ_PHONE_STATE
+                it.requestPermission(permissions, ::openLocationFragment) {
                     it.toast("Permission not granted")
                 }
             }

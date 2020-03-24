@@ -102,11 +102,7 @@ class LocationFragment : DaggerFragment() {
 
     private fun setupStartStopButton() {
         btn_start_stop.setOnClickListener {
-            viewModel.isServiceStarted.value?.let {
-                val serviceAction = getLocationForegroundServiceAction(it)
-                startLocationForegroundServiceIntent(serviceAction)
-                viewModel.inverseLocationServiceStatus()
-            }
+            viewModel.inverseLocationServiceStatus()
         }
     }
 
@@ -134,6 +130,10 @@ class LocationFragment : DaggerFragment() {
 
     private fun setupIsServiceStartedObserver() {
         viewModel.isServiceStarted.observe(viewLifecycleOwner, Observer {
+            val interval = viewModel.configuration.value?.minutesInterval
+                ?: LocationForegroundService.LOCATION_UPDATES_INTERVAL_DEFAULT_VALUE
+            val serviceAction = getLocationForegroundServiceAction(!it)
+            startLocationForegroundServiceIntent(serviceAction, interval)
             btn_start_stop.text = getString(getStartStopButtonLabelId(it))
         })
     }
@@ -141,9 +141,12 @@ class LocationFragment : DaggerFragment() {
     private fun getLocationForegroundServiceAction(isEnabled: Boolean) =
         if (isEnabled) ServiceAction.STOP else ServiceAction.START
 
-    private fun startLocationForegroundServiceIntent(serviceAction: String) {
+    private fun startLocationForegroundServiceIntent(
+        serviceAction: String,
+        interval: Int
+    ) {
         context?.let {
-            val serviceIntent = getLocationForegroundServiceIntent(it)
+            val serviceIntent = getLocationForegroundServiceIntent(it, interval)
             serviceIntent.setServiceAction(serviceAction)
             ContextCompat.startForegroundService(it, serviceIntent)
         }
@@ -153,6 +156,10 @@ class LocationFragment : DaggerFragment() {
         action = serviceAction
     }
 
-    private fun getLocationForegroundServiceIntent(context: Context) =
-        Intent(context, LocationForegroundService::class.java)
+    private fun getLocationForegroundServiceIntent(
+        context: Context,
+        interval: Int = LocationForegroundService.LOCATION_UPDATES_INTERVAL_DEFAULT_VALUE
+    ) = Intent(context, LocationForegroundService::class.java).apply {
+        putExtra(LocationForegroundService.LOCATION_UPDATES_INTERVAL, interval)
+    }
 }
