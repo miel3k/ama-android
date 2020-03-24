@@ -37,7 +37,7 @@ class LocationForegroundService : Service() {
         LocationNotification(applicationContext).create()
     }
     private val binder = LocationForegroundServiceBinder()
-    private lateinit var trackedDeviceId: String
+    private lateinit var deviceId: String
     private var isStarted = false
     private val locationManager by lazy {
         applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -77,7 +77,7 @@ class LocationForegroundService : Service() {
         flags: Int,
         startId: Int
     ): Int {
-        trackedDeviceId = intent.getStringExtra(TRACKED_DEVICE_ID).orEmpty()
+        deviceId = intent.getStringExtra(DEVICE_ID).orEmpty()
         val interval = intent.getIntExtra(
             LOCATION_UPDATES_INTERVAL,
             LOCATION_UPDATES_INTERVAL_DEFAULT_VALUE
@@ -97,6 +97,7 @@ class LocationForegroundService : Service() {
         stopForeground(true)
         stopSelf()
         isStarted = false
+        //locationManager.removeUpdates(locationListener)
     }
 
     private fun startLocationTracking(interval: Int) {
@@ -159,7 +160,7 @@ class LocationForegroundService : Service() {
             satellites = it.getSatellites(),
             time = it.time,
             serial = getAndroidId(applicationContext),
-            trackedDeviceId = trackedDeviceId,
+            deviceId = deviceId,
             platform = PLATFORM_ANDROID,
             platformVersion = Build.VERSION.SDK_INT,
             batteryLevel = getBatteryLevel()
@@ -187,6 +188,6 @@ class LocationForegroundService : Service() {
         private const val PLATFORM_ANDROID = "Android"
         const val LOCATION_UPDATES_INTERVAL_DEFAULT_VALUE = 15
         const val LOCATION_UPDATES_INTERVAL = "LOCATION_UPDATES_INTERVAL"
-        const val TRACKED_DEVICE_ID = "TRACKED_DEVICE_ID"
+        const val DEVICE_ID = "DEVICE_ID"
     }
 }

@@ -13,11 +13,14 @@ class LocationViewModel @Inject constructor(
     private val eventsRepository: EventsDataSource
 ) : ViewModel() {
 
+    private var configurationId: String? = null
     val configuration: LiveData<Configuration> by lazy {
         MediatorLiveData<Configuration>().apply {
-            viewModelScope.launch {
-                addSource(configurationsRepository.getConfiguration("111222")) {
-                    value = it
+            configurationId?.let {
+                viewModelScope.launch {
+                    addSource(configurationsRepository.getConfiguration(it)) {
+                        value = it
+                    }
                 }
             }
         }
@@ -32,6 +35,10 @@ class LocationViewModel @Inject constructor(
         }
     }
     val isServiceStarted = MutableLiveData<Boolean>().apply { value = false }
+
+    fun setupViewModel(newConfigurationId: String) {
+        configurationId = newConfigurationId
+    }
 
     fun changeLocationServiceStatus(isStarted: Boolean) {
         isServiceStarted.value = isStarted

@@ -53,19 +53,22 @@ class ConfigurationFragment : DaggerFragment() {
     }
 
     private fun setupSuccessObserver() {
-        viewModel.success.observe(viewLifecycleOwner, Observer {
+        viewModel.success.observe(viewLifecycleOwner, Observer { configurationId ->
             activity?.let {
                 val permissions =
                     getLocationPermissions() + Manifest.permission.READ_PHONE_STATE
-                it.requestPermission(permissions, ::openLocationFragment) {
-                    it.toast("Permission not granted")
-                }
+                it.requestPermission(
+                    permissions,
+                    { openLocationFragment(configurationId) },
+                    { it.toast("Permission not granted") }
+                )
             }
         })
     }
 
-    private fun openLocationFragment() {
-        findNavController().navigate(R.id.action_location_fragment)
+    private fun openLocationFragment(configurationId: String) {
+        val action = ConfigurationFragmentDirections.openLocationFragment(configurationId)
+        findNavController().navigate(action)
     }
 
     private fun setupErrorObserver() {

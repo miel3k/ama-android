@@ -13,7 +13,7 @@ class ConfigurationViewModel @Inject constructor(
 ) : ViewModel() {
 
     val error = SingleLiveEvent<Error>()
-    val success = SingleLiveEvent<Void>()
+    val success = SingleLiveEvent<String>()
 
     fun loadConfiguration(configurationId: String) {
         if (configurationId.isEmpty()) {
@@ -24,7 +24,7 @@ class ConfigurationViewModel @Inject constructor(
             when (val result =
                 configurationsRepository.loadConfiguration(configurationId)) {
                 is RepositoryResult.Success -> {
-                    success.call()
+                    success.postValue(result.data.id)
                 }
                 is RepositoryResult.Error -> {
                     error.postValue(Error.Remote(result.exception.message.orEmpty()))

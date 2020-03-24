@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ama.R
 import com.ama.core.switchView
@@ -25,6 +26,8 @@ import kotlinx.android.synthetic.main.fragment_location.*
 import javax.inject.Inject
 
 class LocationFragment : DaggerFragment() {
+
+    private val args by navArgs<LocationFragmentArgs>()
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -55,6 +58,7 @@ class LocationFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.setupViewModel(args.configurationId)
         setupEventsRecyclerView()
         setupChangeConfigurationButton()
         setupClearButton()
@@ -132,8 +136,9 @@ class LocationFragment : DaggerFragment() {
         viewModel.isServiceStarted.observe(viewLifecycleOwner, Observer {
             val interval = viewModel.configuration.value?.minutesInterval
                 ?: LocationForegroundService.LOCATION_UPDATES_INTERVAL_DEFAULT_VALUE
+            val deviceId = viewModel.configuration.value?.deviceId.orEmpty()
             val serviceAction = getLocationForegroundServiceAction(!it)
-            startLocationForegroundServiceIntent(serviceAction, interval)
+            startLocationForegroundServiceIntent(serviceAction, deviceId, interval)
             btn_start_stop.text = getString(getStartStopButtonLabelId(it))
         })
     }
@@ -143,10 +148,12 @@ class LocationFragment : DaggerFragment() {
 
     private fun startLocationForegroundServiceIntent(
         serviceAction: String,
+        deviceId: String,
         interval: Int
     ) {
         context?.let {
-            val serviceIntent = getLocationForegroundServiceIntent(it, interval)
+            val serviceIntent =
+                getLocationForegroundServiceIntent(it, deviceId, interval)
             serviceIntent.setServiceAction(serviceAction)
             ContextCompat.startForegroundService(it, serviceIntent)
         }
@@ -158,8 +165,10 @@ class LocationFragment : DaggerFragment() {
 
     private fun getLocationForegroundServiceIntent(
         context: Context,
+        deviceId: String = "",
         interval: Int = LocationForegroundService.LOCATION_UPDATES_INTERVAL_DEFAULT_VALUE
     ) = Intent(context, LocationForegroundService::class.java).apply {
+        putExtra(LocationForegroundService.DEVICE_ID, deviceId)
         putExtra(LocationForegroundService.LOCATION_UPDATES_INTERVAL, interval)
     }
 }

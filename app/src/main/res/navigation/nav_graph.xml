@@ -11,7 +11,7 @@
         android:label="Blank"
         tools:layout="@layout/fragment_configuration">
         <action
-            android:id="@+id/action_location_fragment"
+            android:id="@+id/open_location_fragment"
             app:destination="@id/fr_location" />
     </fragment>
 
@@ -19,5 +19,9 @@
         android:id="@+id/fr_location"
         android:name="com.ama.location.view.LocationFragment"
         android:label="Blank"
-        tools:layout="@layout/fragment_location" />
+        tools:layout="@layout/fragment_location">
+        <argument
+            android:name="configuration_id"
+            app:argType="string" />
+    </fragment>
 </navigation>
