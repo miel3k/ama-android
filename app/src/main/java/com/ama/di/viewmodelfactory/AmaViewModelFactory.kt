@@ -15,6 +15,7 @@ class AmaViewModelFactory @Inject constructor(
             }?.value
         ?: throw IllegalArgumentException("unknown model class $modelClass")
         return try {
+            @Suppress("UNCHECKED_CAST")
             creator.get() as T
         } catch (e: Exception) {
             throw RuntimeException(e)

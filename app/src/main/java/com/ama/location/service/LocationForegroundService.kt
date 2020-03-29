@@ -3,8 +3,10 @@ package com.ama.location.service
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -18,6 +20,12 @@ import com.ama.data.events.EventsDataSource
 import com.ama.data.events.model.Event
 import com.ama.data.locations.LocationsDataSource
 import com.ama.location.LocationNotification
+import com.ama.location.LocationTransitions
+import com.ama.location.LocationTransitions.Companion.TRANSITION_ACTION_RECEIVER
+import com.google.android.gms.location.ActivityTransition
+import com.google.android.gms.location.ActivityTransitionEvent
+import com.google.android.gms.location.ActivityTransitionResult
+import com.google.android.gms.location.DetectedActivity
 import dagger.android.AndroidInjection
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,9 +44,15 @@ class LocationForegroundService : Service() {
     private val locationNotification by lazy {
         LocationNotification(applicationContext).create()
     }
+
+    private val locationTransitions by lazy {
+        LocationTransitions(applicationContext)
+    }
+
     private val binder = LocationForegroundServiceBinder()
     private lateinit var deviceId: String
     private var isStarted = false
+    private var isStill = false
     private val locationManager by lazy {
         applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
@@ -66,6 +80,7 @@ class LocationForegroundService : Service() {
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
+        initReceiver()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -91,10 +106,12 @@ class LocationForegroundService : Service() {
         isStarted = true
         startForeground(NotificationId.LOCATION_FOREGROUND_SERVICE, locationNotification)
         startLocationTracking(interval)
+        startTransitionsTracking()
     }
 
     private fun stop() {
         locationManager.removeUpdates(locationListener)
+        stopTransitionsTracking()
         stopForeground(true)
         stopSelf()
         isStarted = false
@@ -120,6 +137,14 @@ class LocationForegroundService : Service() {
         }
     }
 
+    private fun startTransitionsTracking() {
+        locationTransitions.startTrackingTask()
+    }
+
+    private fun stopTransitionsTracking() {
+        locationTransitions.stopTrackingTask()
+    }
+
     private fun getAvailableLocationProvider(): String {
         return if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             LocationManager.GPS_PROVIDER
@@ -134,8 +159,10 @@ class LocationForegroundService : Service() {
             Manifest.permission.READ_PHONE_STATE
         ) == PackageManager.PERMISSION_GRANTED
         if (isPermissionGranted) {
-            eventsRepository.saveEvent(createLocationEvent())
-            locationsRepository.saveLocation(location.toLocation())
+            if (!isStill) {
+                eventsRepository.saveEvent(createLocationEvent())
+                locationsRepository.saveLocation(location.toLocation())
+            }
         } else {
             stop()
         }
@@ -146,6 +173,18 @@ class LocationForegroundService : Service() {
         date = DateTime.now().toString(),
         message = "Location sent successfully"
     )
+
+    private fun createTransitionEvent(type: String, activity: String) = Event(
+        id = UUID.randomUUID().toString(),
+        date = DateTime.now().toString(),
+        message = "Transition registered: $type -> $activity"
+    )
+
+    private fun initReceiver(): BroadcastReceiver {
+        val receiver = TransitionReceiver()
+        applicationContext.registerReceiver(receiver, IntentFilter(TRANSITION_ACTION_RECEIVER))
+        return receiver
+    }
 
     private fun Location.toLocation() = let {
         com.ama.data.locations.model.Location(
@@ -180,6 +219,45 @@ class LocationForegroundService : Service() {
 
     inner class LocationForegroundServiceBinder : Binder() {
         fun isServiceStarted() = this@LocationForegroundService.isStarted
+    }
+
+    inner class TransitionReceiver : BroadcastReceiver() {
+
+        private fun toActivityString(activity: Int): String {
+            return when (activity) {
+                DetectedActivity.STILL -> "STILL"
+                DetectedActivity.WALKING -> "WALKING"
+                else -> "UNKNOWN"
+            }
+        }
+
+        private fun toTransitionType(transitionType: Int): String {
+            return when (transitionType) {
+                ActivityTransition.ACTIVITY_TRANSITION_ENTER -> "ENTER"
+                ActivityTransition.ACTIVITY_TRANSITION_EXIT -> "EXIT"
+                else -> "UNKNOWN"
+            }
+        }
+
+        private fun updateStillState(event: ActivityTransitionEvent) {
+            isStill = (event.activityType == DetectedActivity.STILL &&
+                    event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+        }
+
+        override fun onReceive(context: Context, intent: Intent) {
+            if (ActivityTransitionResult.hasResult(intent) && isStarted) {
+                val result = ActivityTransitionResult.extractResult(intent)
+                for (event in result?.transitionEvents ?: emptyList()) {
+                    val activity = toActivityString(event.activityType)
+                    val type = toTransitionType(event.transitionType)
+                    val transition = createTransitionEvent(type, activity)
+                    updateStillState(event)
+                    GlobalScope.launch {
+                        eventsRepository.saveEvent(transition)
+                    }
+                }
+            }
+        }
     }
 
     companion object {
