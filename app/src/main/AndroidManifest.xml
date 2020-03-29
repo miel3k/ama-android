@@ -27,7 +27,6 @@
             </intent-filter>
         </activity>
         <service android:name=".location.service.LocationForegroundService" />
-        <service android:name=".location.service.TransitionIntentService"/>
     </application>
 
 </manifest>
