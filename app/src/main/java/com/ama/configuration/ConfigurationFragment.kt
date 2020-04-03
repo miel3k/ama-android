@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.ama.R
 import com.ama.core.getLocationPermissions
@@ -47,7 +47,7 @@ class ConfigurationFragment : DaggerFragment() {
     }
 
     private fun setupSuccessObserver() {
-        viewModel.success.observe(viewLifecycleOwner, Observer { configurationId ->
+        viewModel.success.observe(viewLifecycleOwner) { configurationId ->
             activity?.let {
                 val permissions = getLocationPermissions() + Manifest.permission.READ_PHONE_STATE
                 it.requestPermission(
@@ -56,7 +56,7 @@ class ConfigurationFragment : DaggerFragment() {
                     onDenied = { it.toast("Permission not granted") }
                 )
             }
-        })
+        }
     }
 
     private fun openLocationFragment(configurationId: String) {
@@ -65,7 +65,7 @@ class ConfigurationFragment : DaggerFragment() {
     }
 
     private fun setupErrorObserver() {
-        viewModel.error.observe(viewLifecycleOwner, Observer { error ->
+        viewModel.error.observe(viewLifecycleOwner) { error ->
             context?.let {
                 val errorMessage = when (error) {
                     is ConfigurationViewModel.Error.ConfigurationIdEmpty -> {
@@ -75,6 +75,6 @@ class ConfigurationFragment : DaggerFragment() {
                 }
                 it.toast(errorMessage)
             }
-        })
+        }
     }
 }

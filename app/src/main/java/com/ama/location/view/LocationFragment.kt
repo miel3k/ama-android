@@ -11,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -108,28 +108,28 @@ class LocationFragment : DaggerFragment() {
         if (isStarted) R.string.stop else R.string.start
 
     private fun setupEventsObserver() {
-        viewModel.events.observe(viewLifecycleOwner, Observer {
+        viewModel.events.observe(viewLifecycleOwner) {
             vs_events.switchView(it.isEmpty(), rv_events, v_empty_state)
             eventsAdapter.updateEvents(it)
-        })
+        }
     }
 
     private fun setupConfigurationObserver() {
-        viewModel.configuration.observe(viewLifecycleOwner, Observer {
+        viewModel.configuration.observe(viewLifecycleOwner) {
             tv_title.text = it.id
             tv_name.text = it.name
-        })
+        }
     }
 
     private fun setupIsServiceStartedObserver() {
-        viewModel.isServiceStarted.observe(viewLifecycleOwner, Observer {
+        viewModel.isServiceStarted.observe(viewLifecycleOwner) {
             val interval = viewModel.configuration.value?.minutesInterval
                 ?: LocationForegroundService.LOCATION_UPDATES_INTERVAL_DEFAULT_VALUE
             val deviceId = viewModel.configuration.value?.deviceId.orEmpty()
             val serviceAction = getLocationForegroundServiceAction(!it)
             startLocationForegroundServiceIntent(serviceAction, deviceId, interval)
             btn_start_stop.text = getString(getStartStopButtonLabelId(it))
-        })
+        }
     }
 
     private fun getLocationForegroundServiceAction(isEnabled: Boolean) =

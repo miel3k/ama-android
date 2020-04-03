@@ -8,7 +8,6 @@ apply plugin: 'androidx.navigation.safeargs.kotlin'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
-
     defaultConfig {
         applicationId "com.ama"
         minSdkVersion 21
@@ -18,21 +17,18 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
-
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = "1.8"
     }
 }
 
