@@ -41,8 +41,7 @@ class LocationFragment : DaggerFragment() {
         }
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            val binder =
-                service as LocationForegroundService.LocationForegroundServiceBinder
+            val binder = service as LocationForegroundService.LocationForegroundServiceBinder
             val isServiceStarted = binder.isServiceStarted()
             viewModel.changeLocationServiceStatus(isServiceStarted)
         }
@@ -52,9 +51,7 @@ class LocationFragment : DaggerFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_location, container, false)
-    }
+    ): View = inflater.inflate(R.layout.fragment_location, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -71,11 +68,7 @@ class LocationFragment : DaggerFragment() {
     override fun onStart() {
         context?.let {
             val serviceIntent = getLocationForegroundServiceIntent(it)
-            it.bindService(
-                serviceIntent,
-                serviceConnection,
-                Context.BIND_AUTO_CREATE
-            )
+            it.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         }
         super.onStart()
     }
@@ -111,13 +104,8 @@ class LocationFragment : DaggerFragment() {
         }
     }
 
-    private fun getStartStopButtonLabelId(isStarted: Boolean): Int {
-        return if (isStarted) {
-            R.string.stop
-        } else {
-            R.string.start
-        }
-    }
+    private fun getStartStopButtonLabelId(isStarted: Boolean) =
+        if (isStarted) R.string.stop else R.string.start
 
     private fun setupEventsObserver() {
         viewModel.events.observe(viewLifecycleOwner, Observer {

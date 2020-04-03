@@ -29,13 +29,7 @@ class ConfigurationFragment : DaggerFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(
-            R.layout.fragment_configuration,
-            container,
-            false
-        )
-    }
+    ): View = inflater.inflate(R.layout.fragment_configuration, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
