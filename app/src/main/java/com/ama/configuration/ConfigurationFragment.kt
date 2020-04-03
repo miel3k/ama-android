@@ -49,12 +49,11 @@ class ConfigurationFragment : DaggerFragment() {
     private fun setupSuccessObserver() {
         viewModel.success.observe(viewLifecycleOwner, Observer { configurationId ->
             activity?.let {
-                val permissions =
-                    getLocationPermissions() + Manifest.permission.READ_PHONE_STATE
+                val permissions = getLocationPermissions() + Manifest.permission.READ_PHONE_STATE
                 it.requestPermission(
                     permissions,
-                    { openLocationFragment(configurationId) },
-                    { it.toast("Permission not granted") }
+                    onGranted = { openLocationFragment(configurationId) },
+                    onDenied = { it.toast("Permission not granted") }
                 )
             }
         })
