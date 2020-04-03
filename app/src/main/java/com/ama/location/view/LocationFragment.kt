@@ -94,6 +94,7 @@ class LocationFragment : DaggerFragment() {
 
     private fun setupChangeConfigurationButton() {
         btn_change_configuration.setOnClickListener {
+            viewModel.changeLocationServiceStatus(false)
             findNavController().popBackStack()
         }
     }
@@ -152,8 +153,7 @@ class LocationFragment : DaggerFragment() {
         interval: Int
     ) {
         context?.let {
-            val serviceIntent =
-                getLocationForegroundServiceIntent(it, deviceId, interval)
+            val serviceIntent = getLocationForegroundServiceIntent(it, deviceId, interval)
             serviceIntent.setServiceAction(serviceAction)
             ContextCompat.startForegroundService(it, serviceIntent)
         }

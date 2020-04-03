@@ -3,13 +3,10 @@ package com.ama.location
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.navigation.NavDeepLinkBuilder
-import com.ama.MainActivity
 import com.ama.R
 
 class LocationNotification(private val applicationContext: Context) {
@@ -20,16 +17,7 @@ class LocationNotification(private val applicationContext: Context) {
 
     fun create() = applicationContext.run {
         notificationManager.createNotificationChannel()
-        val pendingIntent = getOnlineComponentsActivityPendingIntent()
-        createNotification(pendingIntent)
-    }
-
-    private fun getOnlineComponentsActivityPendingIntent(): PendingIntent {
-        return NavDeepLinkBuilder(applicationContext)
-            .setComponentName(MainActivity::class.java)
-            .setGraph(R.navigation.nav_graph)
-            .setDestination(R.id.fr_location)
-            .createPendingIntent()
+        createNotification()
     }
 
     private fun NotificationManagerCompat.createNotificationChannel() {
@@ -43,11 +31,10 @@ class LocationNotification(private val applicationContext: Context) {
         }
     }
 
-    private fun createNotification(pendingIntent: PendingIntent): Notification {
+    private fun createNotification(): Notification {
         return NotificationCompat
             .Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
             .setContentTitle(applicationContext.getString(R.string.location_service_title))
-            .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_location_on_black_24dp)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(false)
@@ -59,9 +46,7 @@ class LocationNotification(private val applicationContext: Context) {
     }
 
     private companion object {
-        const val NOTIFICATION_CHANNEL_ID =
-            "LOCATION_NOTIFICATION_CHANNEL_ID"
-        const val NOTIFICATION_CHANNEL_NAME =
-            "LOCATION_NOTIFICATION_CHANNEL_NAME"
+        const val NOTIFICATION_CHANNEL_ID = "LOCATION_NOTIFICATION_CHANNEL_ID"
+        const val NOTIFICATION_CHANNEL_NAME = "LOCATION_NOTIFICATION_CHANNEL_NAME"
     }
 }

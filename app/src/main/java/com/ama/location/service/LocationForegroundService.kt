@@ -41,46 +41,50 @@ class LocationForegroundService : Service() {
     @Inject
     lateinit var locationsRepository: LocationsDataSource
 
-    private val locationNotification by lazy {
-        LocationNotification(applicationContext).create()
-    }
-
     private val locationTransitions by lazy {
         LocationTransitions(applicationContext)
+    }
+
+    private val transitionReceiver by lazy {
+        TransitionReceiver()
+    }
+
+    private val locationManager by lazy {
+        applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    }
+
+    private val batteryManager by lazy {
+        applicationContext.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+    }
+
+    private val locationListener by lazy {
+        object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                GlobalScope.launch {
+                    sendLocation(location)
+                }
+            }
+
+            override fun onStatusChanged(
+                provider: String,
+                status: Int,
+                extras: Bundle
+            ) {
+            }
+
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
+        }
     }
 
     private val binder = LocationForegroundServiceBinder()
     private lateinit var deviceId: String
     private var isStarted = false
     private var isStill = false
-    private val locationManager by lazy {
-        applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    }
-    private val batteryManager by lazy {
-        applicationContext.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
-    }
-    private val locationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location) {
-            GlobalScope.launch {
-                sendLocation(location)
-            }
-        }
-
-        override fun onStatusChanged(
-            provider: String,
-            status: Int,
-            extras: Bundle
-        ) {
-        }
-
-        override fun onProviderEnabled(provider: String) {}
-        override fun onProviderDisabled(provider: String) {}
-    }
 
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
-        initReceiver()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -103,17 +107,22 @@ class LocationForegroundService : Service() {
 
     private fun start(interval: Int) {
         if (isStarted) return
-        isStarted = true
+        val locationNotification = LocationNotification(applicationContext).create()
         startForeground(NotificationId.LOCATION_FOREGROUND_SERVICE, locationNotification)
         startLocationTracking(interval)
+        registerTransitionReceiver()
         startTransitionsTracking()
+        isStarted = true
     }
 
     private fun stop() {
-        locationManager.removeUpdates(locationListener)
-        stopTransitionsTracking()
-        stopForeground(true)
-        stopSelf()
+        if (isStarted) {
+            locationManager.removeUpdates(locationListener)
+            stopTransitionsTracking()
+            unregisterTransitionReceiver()
+            stopForeground(true)
+            stopSelf()
+        }
         isStarted = false
     }
 
@@ -143,6 +152,17 @@ class LocationForegroundService : Service() {
 
     private fun stopTransitionsTracking() {
         locationTransitions.stopTrackingTask()
+    }
+
+    private fun registerTransitionReceiver() {
+        applicationContext.registerReceiver(
+            transitionReceiver,
+            IntentFilter(TRANSITION_ACTION_RECEIVER)
+        )
+    }
+
+    private fun unregisterTransitionReceiver() {
+        applicationContext.unregisterReceiver(transitionReceiver)
     }
 
     private fun getAvailableLocationProvider(): String {
@@ -180,12 +200,6 @@ class LocationForegroundService : Service() {
         message = "Transition registered: $type -> $activity"
     )
 
-    private fun initReceiver(): BroadcastReceiver {
-        val receiver = TransitionReceiver()
-        applicationContext.registerReceiver(receiver, IntentFilter(TRANSITION_ACTION_RECEIVER))
-        return receiver
-    }
-
     private fun Location.toLocation() = let {
         com.ama.data.locations.model.Location(
             id = UUID.randomUUID().toString(),
@@ -202,14 +216,14 @@ class LocationForegroundService : Service() {
             deviceId = deviceId,
             platform = PLATFORM_ANDROID,
             platformVersion = Build.VERSION.SDK_INT,
-            batteryLevel = getBatteryLevel()
+            batteryLevel = batteryManager.getBatteryLevel()
         )
     }
 
     private fun Location.getSatellites() = extras.getInt(SATELLITES)
 
-    private fun getBatteryLevel() =
-        batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+    private fun BatteryManager.getBatteryLevel() =
+        getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
 
     @SuppressLint("HardwareIds")
     private fun getAndroidId(context: Context) = Settings.Secure.getString(
@@ -223,41 +237,32 @@ class LocationForegroundService : Service() {
 
     inner class TransitionReceiver : BroadcastReceiver() {
 
-        private fun toActivityString(activity: Int): String {
-            return when (activity) {
-                DetectedActivity.STILL -> "STILL"
-                DetectedActivity.WALKING -> "WALKING"
-                else -> "UNKNOWN"
-            }
-        }
-
-        private fun toTransitionType(transitionType: Int): String {
-            return when (transitionType) {
-                ActivityTransition.ACTIVITY_TRANSITION_ENTER -> "ENTER"
-                ActivityTransition.ACTIVITY_TRANSITION_EXIT -> "EXIT"
-                else -> "UNKNOWN"
-            }
-        }
-
-        private fun updateStillState(event: ActivityTransitionEvent) {
-            isStill = (event.activityType == DetectedActivity.STILL &&
-                    event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-        }
-
         override fun onReceive(context: Context, intent: Intent) {
             if (ActivityTransitionResult.hasResult(intent) && isStarted) {
-                val result = ActivityTransitionResult.extractResult(intent)
-                for (event in result?.transitionEvents ?: emptyList()) {
-                    val activity = toActivityString(event.activityType)
-                    val type = toTransitionType(event.transitionType)
-                    val transition = createTransitionEvent(type, activity)
-                    updateStillState(event)
-                    GlobalScope.launch {
-                        eventsRepository.saveEvent(transition)
-                    }
+                ActivityTransitionResult.extractResult(intent)?.transitionEvents?.forEach {
+                    val activity = toActivityString(it.activityType)
+                    val type = toTransitionType(it.transitionType)
+                    val transitionEvent = createTransitionEvent(type, activity)
+                    isStill = it.isStill()
+                    GlobalScope.launch { eventsRepository.saveEvent(transitionEvent) }
                 }
             }
         }
+
+        private fun toActivityString(activity: Int) = when (activity) {
+            DetectedActivity.STILL -> "STILL"
+            DetectedActivity.WALKING -> "WALKING"
+            else -> "UNKNOWN"
+        }
+
+        private fun toTransitionType(transitionType: Int) = when (transitionType) {
+            ActivityTransition.ACTIVITY_TRANSITION_ENTER -> "ENTER"
+            ActivityTransition.ACTIVITY_TRANSITION_EXIT -> "EXIT"
+            else -> "UNKNOWN"
+        }
+
+        private fun ActivityTransitionEvent.isStill() = activityType == DetectedActivity.STILL
+                && transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER
     }
 
     companion object {
