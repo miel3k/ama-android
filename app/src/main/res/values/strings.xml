@@ -12,4 +12,6 @@
     <string name="stop">Stop</string>
     <string name="clear">Clear</string>
     <string name="location_service_title">Location service is running</string>
+    <string name="configuration_id">Configuration ID</string>
+    <string name="get_configuration">Get configuration</string>
 </resources>

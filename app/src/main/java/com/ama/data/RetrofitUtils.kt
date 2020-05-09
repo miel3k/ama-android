@@ -6,9 +6,16 @@ import java.io.IOException
 
 suspend fun <T : Any> Deferred<Response<T>>.call(): RepositoryResult<T> {
     val response = await()
-    return if (response.isSuccessful) {
-        RepositoryResult.Success(response.body()!!)
-    } else {
-        RepositoryResult.Error(IOException(response.message()))
+    val responseBody = response.body()
+    return when {
+        response.isSuccessful && responseBody != null -> {
+            RepositoryResult.Success(responseBody)
+        }
+        response.isSuccessful && responseBody == null -> {
+            RepositoryResult.Error(IOException("Configuration not found"))
+        }
+        else -> {
+            RepositoryResult.Error(IOException(response.errorBody().toString()))
+        }
     }
 }

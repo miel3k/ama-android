@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
@@ -36,13 +37,15 @@ class ConfigurationFragment : DaggerFragment() {
         setupConfigurationButton()
         setupSuccessObserver()
         setupErrorObserver()
+        setupIsLoadingObserver()
     }
 
     private fun setupConfigurationButton() {
         btn_configuration.setOnClickListener {
+            context?.hideSoftKeyboard(view)
+            et_configuration_id.clearFocus()
             val configurationId = et_configuration_id.text.toString()
             viewModel.loadConfiguration(configurationId)
-            context?.hideSoftKeyboard(view)
         }
     }
 
@@ -75,6 +78,14 @@ class ConfigurationFragment : DaggerFragment() {
                 }
                 it.toast(errorMessage)
             }
+        }
+    }
+
+    private fun setupIsLoadingObserver() {
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            pb_loading.isVisible = it
+            btn_configuration.isEnabled = !it
+            et_configuration_id.isEnabled = !it
         }
     }
 }
