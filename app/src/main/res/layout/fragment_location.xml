@@ -44,6 +44,8 @@
         android:id="@+id/vs_events"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/events_background"
         android:inAnimation="@android:anim/fade_in"
         app:layout_constraintBottom_toTopOf="@id/btn_clear_logs"
         app:layout_constraintLeft_toLeftOf="parent"

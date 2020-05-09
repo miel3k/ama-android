@@ -55,8 +55,14 @@ class ConfigurationFragment : DaggerFragment() {
                 val permissions = getLocationPermissions() + Manifest.permission.READ_PHONE_STATE
                 it.requestPermission(
                     permissions,
-                    onGranted = { openLocationFragment(configurationId) },
-                    onDenied = { it.toast("Permission not granted") }
+                    onGranted = {
+                        viewModel.savePermissionEvent(true)
+                        openLocationFragment(configurationId)
+                    },
+                    onDenied = {
+                        viewModel.savePermissionEvent(false)
+                        it.toast("Permission not granted")
+                    }
                 )
             }
         }

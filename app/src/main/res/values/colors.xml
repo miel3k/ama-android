@@ -8,4 +8,8 @@
     <color name="solitude">#E8E9EC</color>
     <color name="white_smoke">#f8f8f8</color>
     <color name="iron_transparent">#80CCCCCC</color>
+    <color name="whisper">#EDEDED</color>
+    <color name="dark_red">#a13229</color>
+    <color name="dark_grayish_blue">#adaeb0</color>
+    <color name="light_grayish_blue">#f8f9fc</color>
 </resources>

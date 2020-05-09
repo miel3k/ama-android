@@ -6,16 +6,21 @@ import androidx.lifecycle.viewModelScope
 import com.ama.core.SingleLiveEvent
 import com.ama.data.RepositoryResult
 import com.ama.data.configurations.ConfigurationsDataSource
+import com.ama.data.events.EventsDataSource
+import com.ama.data.events.model.Event
 import kotlinx.coroutines.launch
+import org.joda.time.DateTime
+import java.util.*
 import javax.inject.Inject
 
 class ConfigurationViewModel @Inject constructor(
-    private val configurationsRepository: ConfigurationsDataSource
+    private val configurationsRepository: ConfigurationsDataSource,
+    private val eventsRepository: EventsDataSource
 ) : ViewModel() {
 
     val error = SingleLiveEvent<Error>()
     val success = SingleLiveEvent<String>()
-    val isLoading = MutableLiveData<Boolean>(false)
+    val isLoading = MutableLiveData(false)
 
     fun loadConfiguration(configurationId: String) {
         if (configurationId.isEmpty()) {
@@ -37,6 +42,18 @@ class ConfigurationViewModel @Inject constructor(
             }
         }
     }
+
+    fun savePermissionEvent(isGranted: Boolean) {
+        viewModelScope.launch {
+            eventsRepository.saveEvent(createPermissionEvent(isGranted))
+        }
+    }
+
+    private fun createPermissionEvent(isGranted: Boolean) = Event(
+        id = UUID.randomUUID().toString(),
+        date = DateTime.now().toString(),
+        message = if (isGranted) "Permissions granted" else "Permissions not granted"
+    )
 
     sealed class Error {
         object ConfigurationIdEmpty : Error()
