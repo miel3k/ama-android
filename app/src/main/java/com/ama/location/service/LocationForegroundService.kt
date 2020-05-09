@@ -180,18 +180,20 @@ class LocationForegroundService : Service() {
         ) == PackageManager.PERMISSION_GRANTED
         if (isPermissionGranted) {
             if (!isStill) {
-                eventsRepository.saveEvent(createLocationEvent())
-                locationsRepository.saveLocation(location.toLocation())
+                location.toLocation().let {
+                    eventsRepository.saveEvent(createLocationEvent(it))
+                    locationsRepository.saveLocation(it)
+                }
             }
         } else {
             stop()
         }
     }
 
-    private fun createLocationEvent() = Event(
+    private fun createLocationEvent(location: com.ama.data.locations.model.Location) = Event(
         id = UUID.randomUUID().toString(),
         date = DateTime.now().toString(),
-        message = "Location sent successfully"
+        message = "Location sent: lat = ${location.latitude} lon = ${location.longitude}"
     )
 
     private fun createTransitionEvent(type: String, activity: String) = Event(
