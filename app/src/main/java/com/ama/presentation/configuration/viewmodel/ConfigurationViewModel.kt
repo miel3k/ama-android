@@ -29,8 +29,7 @@ class ConfigurationViewModel @Inject constructor(
         }
         isLoading.value = true
         viewModelScope.launch {
-            when (val result =
-                configurationsRepository.loadConfiguration(configurationId)) {
+            when (val result = configurationsRepository.loadConfiguration(configurationId)) {
                 is RepositoryResult.Success -> {
                     saveGetConfigurationEvent(true, configurationId)
                     success.postValue(result.data.id)
