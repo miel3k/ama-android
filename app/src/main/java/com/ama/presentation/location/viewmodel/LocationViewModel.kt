@@ -34,21 +34,23 @@ class LocationViewModel @Inject constructor(
             }
         }
     }
-    val isServiceStarted = MutableLiveData<Boolean>().apply { value = false }
+    val isServiceStarted = MutableLiveData<Boolean>()
 
     fun setupViewModel(newConfigurationId: String) {
         configurationId = newConfigurationId
     }
 
     fun changeLocationServiceStatus(isStarted: Boolean) {
-        isServiceStarted.value = isStarted
+        val oldIsServiceStarted = isServiceStarted.value
+        when {
+            isStarted -> isServiceStarted.value = isStarted
+            oldIsServiceStarted == true -> isServiceStarted.value = isStarted
+        }
     }
 
     fun inverseLocationServiceStatus() {
-        val currentStatus = isServiceStarted.value
-        currentStatus?.let {
-            isServiceStarted.value = !it
-        }
+        val oldIsServiceStarted = isServiceStarted.value ?: false
+        isServiceStarted.value = !oldIsServiceStarted
     }
 
     fun clearEvents() {

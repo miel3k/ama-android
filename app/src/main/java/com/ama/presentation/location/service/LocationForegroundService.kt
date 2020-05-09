@@ -193,13 +193,13 @@ class LocationForegroundService : Service() {
     private fun createLocationEvent(location: com.ama.data.locations.model.Location) = Event(
         id = UUID.randomUUID().toString(),
         date = DateTime.now().toString(),
-        message = "Location sent: lat = ${location.latitude} lon = ${location.longitude}"
+        message = "Location sent:\nlat = ${location.latitude}\nlon = ${location.longitude}"
     )
 
     private fun createTransitionEvent(type: String, activity: String) = Event(
         id = UUID.randomUUID().toString(),
         date = DateTime.now().toString(),
-        message = "Transition registered: $type -> $activity"
+        message = "Transition registered:\n$type -> $activity"
     )
 
     private fun Location.toLocation() = let {

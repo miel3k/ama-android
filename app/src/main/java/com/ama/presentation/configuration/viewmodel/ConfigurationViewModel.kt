@@ -32,10 +32,12 @@ class ConfigurationViewModel @Inject constructor(
             when (val result =
                 configurationsRepository.loadConfiguration(configurationId)) {
                 is RepositoryResult.Success -> {
+                    saveGetConfigurationEvent(true, configurationId)
                     success.postValue(result.data.id)
                     isLoading.value = false
                 }
                 is RepositoryResult.Error -> {
+                    saveGetConfigurationEvent(false, configurationId)
                     error.postValue(Error.Remote(result.exception.message.orEmpty()))
                     isLoading.value = false
                 }
@@ -49,10 +51,30 @@ class ConfigurationViewModel @Inject constructor(
         }
     }
 
+    private fun saveGetConfigurationEvent(isSuccess: Boolean, id: String) {
+        viewModelScope.launch {
+            eventsRepository.saveEvent(createGetConfigurationEvent(isSuccess, id))
+        }
+    }
+
     private fun createPermissionEvent(isGranted: Boolean) = Event(
         id = UUID.randomUUID().toString(),
         date = DateTime.now().toString(),
-        message = if (isGranted) "Permissions granted" else "Permissions not granted"
+        message = if (isGranted) {
+            "Permissions checked:\nstatus = granted"
+        } else {
+            "Permissions checked:\nstatus = not granted"
+        }
+    )
+
+    private fun createGetConfigurationEvent(isSuccess: Boolean, id: String) = Event(
+        id = UUID.randomUUID().toString(),
+        date = DateTime.now().toString(),
+        message = if (isSuccess) {
+            "GET configuration:\nstatus = success\nid = $id "
+        } else {
+            "GET configuration:\nstatus = failure\nid = $id"
+        }
     )
 
     sealed class Error {
