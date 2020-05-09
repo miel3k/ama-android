@@ -16,6 +16,7 @@ import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ama.AmaApplication
 import com.ama.R
 import com.ama.core.switchView
 import com.ama.location.service.LocationForegroundService
@@ -88,6 +89,7 @@ class LocationFragment : DaggerFragment(), LocationOnBack {
     private fun setupChangeConfigurationButton() {
         btn_change_configuration.setOnClickListener {
             viewModel.changeLocationServiceStatus(false)
+            context?.let { context -> removeConfigurationId(context) }
             findNavController().popBackStack()
         }
     }
@@ -162,5 +164,13 @@ class LocationFragment : DaggerFragment(), LocationOnBack {
 
     override fun onBackPressed() {
         viewModel.changeLocationServiceStatus(false)
+        context?.let { removeConfigurationId(it) }
+    }
+
+    private fun removeConfigurationId(context: Context) {
+        context.getSharedPreferences(AmaApplication.AMA_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+            .edit()
+            .remove(AmaApplication.CONFIGURATION_ID)
+            .apply()
     }
 }

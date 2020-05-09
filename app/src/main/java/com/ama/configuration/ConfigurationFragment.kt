@@ -1,6 +1,7 @@
 package com.ama.configuration
 
 import android.Manifest
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import com.ama.AmaApplication
 import com.ama.R
 import com.ama.core.getLocationPermissions
 import com.ama.core.hideSoftKeyboard
@@ -34,6 +36,13 @@ class ConfigurationFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        context?.let {
+            val configurationId = getConfigurationId(it)
+            if (!configurationId.isNullOrEmpty()) {
+                onSuccess(configurationId)
+                return
+            }
+        }
         setupConfigurationButton()
         setupSuccessObserver()
         setupErrorObserver()
@@ -50,23 +59,39 @@ class ConfigurationFragment : DaggerFragment() {
     }
 
     private fun setupSuccessObserver() {
-        viewModel.success.observe(viewLifecycleOwner) { configurationId ->
-            activity?.let {
-                val permissions = getLocationPermissions() + Manifest.permission.READ_PHONE_STATE
-                it.requestPermission(
-                    permissions,
-                    onGranted = {
-                        viewModel.savePermissionEvent(true)
-                        openLocationFragment(configurationId)
-                    },
-                    onDenied = {
-                        viewModel.savePermissionEvent(false)
-                        it.toast("Permission not granted")
-                    }
-                )
-            }
+        viewModel.success.observe(viewLifecycleOwner) {
+            onSuccess(it)
         }
     }
+
+    private fun onSuccess(configurationId: String) {
+        activity?.let {
+            saveConfigurationId(it, configurationId)
+            val permissions = getLocationPermissions() + Manifest.permission.READ_PHONE_STATE
+            it.requestPermission(
+                permissions,
+                onGranted = {
+                    viewModel.savePermissionEvent(true)
+                    openLocationFragment(configurationId)
+                },
+                onDenied = {
+                    viewModel.savePermissionEvent(false)
+                    it.toast("Permission not granted")
+                }
+            )
+        }
+    }
+
+    private fun saveConfigurationId(context: Context, configurationId: String) {
+        context.getSharedPreferences(AmaApplication.AMA_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+            .edit()
+            .putString(AmaApplication.CONFIGURATION_ID, configurationId)
+            .apply()
+    }
+
+    private fun getConfigurationId(context: Context) = context
+        .getSharedPreferences(AmaApplication.AMA_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+        .getString(AmaApplication.CONFIGURATION_ID, "")
 
     private fun openLocationFragment(configurationId: String) {
         val action = ConfigurationFragmentDirections.openLocationFragment(configurationId)
