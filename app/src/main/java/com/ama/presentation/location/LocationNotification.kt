@@ -1,4 +1,4 @@
-package com.ama.location
+package com.ama.presentation.location
 
 import android.app.Notification
 import android.app.NotificationChannel

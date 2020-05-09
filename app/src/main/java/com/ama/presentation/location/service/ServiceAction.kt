@@ -1,4 +1,4 @@
-package com.ama.location.service
+package com.ama.presentation.location.service
 
 object ServiceAction {
     const val START = "START"

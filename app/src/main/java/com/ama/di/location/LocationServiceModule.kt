@@ -1,6 +1,6 @@
 package com.ama.di.location
 
-import com.ama.location.service.LocationForegroundService
+import com.ama.presentation.location.service.LocationForegroundService
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

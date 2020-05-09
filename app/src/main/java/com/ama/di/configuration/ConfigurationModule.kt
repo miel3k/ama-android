@@ -1,8 +1,8 @@
 package com.ama.di.configuration
 
 import androidx.lifecycle.ViewModel
-import com.ama.configuration.ConfigurationFragment
-import com.ama.configuration.ConfigurationViewModel
+import com.ama.presentation.configuration.view.ConfigurationFragment
+import com.ama.presentation.configuration.viewmodel.ConfigurationViewModel
 import com.ama.di.viewmodelfactory.ViewModelFactoryModule
 import com.ama.di.viewmodelfactory.ViewModelKey
 import dagger.Binds

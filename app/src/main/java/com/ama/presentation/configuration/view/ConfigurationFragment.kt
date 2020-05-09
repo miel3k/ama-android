@@ -1,4 +1,4 @@
-package com.ama.configuration
+package com.ama.presentation.configuration.view
 
 import android.Manifest
 import android.content.Context
@@ -17,6 +17,7 @@ import com.ama.core.getLocationPermissions
 import com.ama.core.hideSoftKeyboard
 import com.ama.core.requestPermission
 import com.ama.core.toast
+import com.ama.presentation.configuration.viewmodel.ConfigurationViewModel
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_configuration.*
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package com.ama.location.service
+package com.ama.presentation.location.service
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -14,14 +14,14 @@ import android.location.LocationManager
 import android.os.*
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
-import com.ama.NotificationId
 import com.ama.core.getLocationPermissions
 import com.ama.data.events.EventsDataSource
 import com.ama.data.events.model.Event
 import com.ama.data.locations.LocationsDataSource
-import com.ama.location.LocationNotification
-import com.ama.location.LocationTransitions
-import com.ama.location.LocationTransitions.Companion.TRANSITION_ACTION_RECEIVER
+import com.ama.presentation.NotificationId
+import com.ama.presentation.location.LocationNotification
+import com.ama.presentation.location.LocationTransitions
+import com.ama.presentation.location.LocationTransitions.Companion.TRANSITION_ACTION_RECEIVER
 import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionEvent
 import com.google.android.gms.location.ActivityTransitionResult

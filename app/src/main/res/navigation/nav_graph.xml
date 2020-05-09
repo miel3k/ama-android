@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fr_configuration"
-        android:name="com.ama.configuration.ConfigurationFragment"
+        android:name="com.ama.presentation.configuration.view.ConfigurationFragment"
         android:label="Blank"
         tools:layout="@layout/fragment_configuration">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/fr_location"
-        android:name="com.ama.location.view.LocationFragment"
+        android:name="com.ama.presentation.location.view.LocationFragment"
         android:label="Blank"
         tools:layout="@layout/fragment_location">
         <argument

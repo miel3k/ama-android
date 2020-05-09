@@ -1,4 +1,4 @@
-package com.ama.configuration
+package com.ama.presentation.configuration.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

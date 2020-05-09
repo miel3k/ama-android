@@ -1,4 +1,4 @@
-package com.ama.location.view
+package com.ama.presentation.location.view
 
 import android.content.ComponentName
 import android.content.Context
@@ -19,9 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.ama.AmaApplication
 import com.ama.R
 import com.ama.core.switchView
-import com.ama.location.service.LocationForegroundService
-import com.ama.location.service.ServiceAction
-import com.ama.location.viewmodel.LocationViewModel
+import com.ama.presentation.location.service.LocationForegroundService
+import com.ama.presentation.location.service.ServiceAction
+import com.ama.presentation.location.viewmodel.LocationViewModel
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_location.*
 import javax.inject.Inject

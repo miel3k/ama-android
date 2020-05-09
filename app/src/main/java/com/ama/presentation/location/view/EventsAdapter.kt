@@ -1,4 +1,4 @@
-package com.ama.location.view
+package com.ama.presentation.location.view
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

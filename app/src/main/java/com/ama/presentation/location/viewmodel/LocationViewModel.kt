@@ -1,4 +1,4 @@
-package com.ama.location.viewmodel
+package com.ama.presentation.location.viewmodel
 
 import androidx.lifecycle.*
 import com.ama.data.configurations.ConfigurationsDataSource

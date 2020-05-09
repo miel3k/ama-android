@@ -1,8 +1,9 @@
-package com.ama
+package com.ama.presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.ama.location.view.LocationOnBack
+import com.ama.R
+import com.ama.presentation.location.view.LocationOnBack
 
 class MainActivity : AppCompatActivity() {
 
