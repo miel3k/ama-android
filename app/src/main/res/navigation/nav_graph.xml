@@ -12,10 +12,7 @@
         tools:layout="@layout/fragment_configuration">
         <action
             android:id="@+id/open_location_fragment"
-            app:destination="@id/fr_location"
-            app:launchSingleTop="true"
-            app:popUpTo="@+id/nav_graph"
-            app:popUpToInclusive="true" />
+            app:destination="@id/fr_location" />
     </fragment>
 
     <fragment

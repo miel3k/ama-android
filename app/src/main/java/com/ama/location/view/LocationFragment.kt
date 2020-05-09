@@ -25,7 +25,7 @@ import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_location.*
 import javax.inject.Inject
 
-class LocationFragment : DaggerFragment() {
+class LocationFragment : DaggerFragment(), LocationOnBack {
 
     private val args by navArgs<LocationFragmentArgs>()
 
@@ -158,5 +158,9 @@ class LocationFragment : DaggerFragment() {
     ) = Intent(context, LocationForegroundService::class.java).apply {
         putExtra(LocationForegroundService.DEVICE_ID, deviceId)
         putExtra(LocationForegroundService.LOCATION_UPDATES_INTERVAL, interval)
+    }
+
+    override fun onBackPressed() {
+        viewModel.changeLocationServiceStatus(false)
     }
 }
