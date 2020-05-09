@@ -21,8 +21,12 @@ class ConfigurationsRepository @Inject constructor(
     override suspend fun loadConfiguration(configurationId: String): RepositoryResult<Configuration> {
         val configurationResult = configurationsRemote.loadConfiguration(configurationId)
         if (configurationResult is RepositoryResult.Success) {
-            configurationsLocal.saveConfiguration(configurationResult.data)
+            saveConfiguration(configurationResult.data)
         }
         return configurationResult
+    }
+
+    override suspend fun saveConfiguration(configuration: Configuration) {
+        configurationsLocal.saveConfiguration(configuration)
     }
 }

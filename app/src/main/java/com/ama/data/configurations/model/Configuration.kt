@@ -23,5 +23,5 @@ data class Configuration @JvmOverloads constructor(
     var deviceId: String = "",
     @ColumnInfo(name = "minutesInterval")
     @field:Json(name = "minutesInterval")
-    var minutesInterval: Int
+    var minutesInterval: Int = 0
 )
