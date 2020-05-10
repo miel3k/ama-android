@@ -15,6 +15,7 @@ import android.os.*
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import com.ama.core.getLocationPermissions
+import com.ama.data.RepositoryResult
 import com.ama.data.events.EventsDataSource
 import com.ama.data.events.model.Event
 import com.ama.data.locations.LocationsDataSource
@@ -182,7 +183,14 @@ class LocationForegroundService : Service() {
             if (!isStill) {
                 location.toLocation().let {
                     eventsRepository.saveEvent(createLocationEvent(it))
-                    locationsRepository.saveLocation(it)
+                    when (val result = locationsRepository.saveLocation(it)) {
+                        is RepositoryResult.Success -> {
+                            eventsRepository.saveEvent(createSendLocationEvent(it, true))
+                        }
+                        is RepositoryResult.Error -> {
+                            eventsRepository.saveEvent(createSendLocationEvent(it, false))
+                        }
+                    }
                 }
             }
         } else {
@@ -193,7 +201,20 @@ class LocationForegroundService : Service() {
     private fun createLocationEvent(location: com.ama.data.locations.model.Location) = Event(
         id = UUID.randomUUID().toString(),
         date = DateTime.now().toString(),
-        message = "Location sent:\nlat = ${location.latitude}\nlon = ${location.longitude}"
+        message = "Location saved:\nlat = ${location.latitude}\nlon = ${location.longitude}"
+    )
+
+    private fun createSendLocationEvent(
+        location: com.ama.data.locations.model.Location,
+        isSuccess: Boolean
+    ) = Event(
+        id = UUID.randomUUID().toString(),
+        date = DateTime.now().toString(),
+        message = if (isSuccess) {
+            "POST Location:\nstatus = success\nlat = ${location.latitude}\nlon = ${location.longitude}"
+        } else {
+            "POST Location:\nstatus = failure\nlat = ${location.latitude}\nlon = ${location.longitude}"
+        }
     )
 
     private fun createTransitionEvent(type: String, activity: String) = Event(
